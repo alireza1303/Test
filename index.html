@@ -25,12 +25,10 @@
             --text-v-dim: #757575;
             --accent-red: #ff7070;
 
-            /* Active theme tokens (default: standard = primary) */
             --theme: var(--primary);
             --theme-glow: var(--primary-glow);
         }
 
-        /* ── THEME OVERRIDES ─────────────────────────────────── */
         body.mode-extreme {
             --theme: var(--extreme);
             --theme-glow: var(--extreme-glow);
@@ -225,7 +223,6 @@
 
                     <div class="input-group">
                         <label>Difficulty</label>
-                        <!-- 3-column grid for the 3 difficulty buttons -->
                         <div class="mode-selector" style="grid-template-columns: 1fr 1fr 1fr;">
                             <div class="mode-btn" data-diff="casual" onclick="setDifficulty('casual')">Casual</div>
                             <div class="mode-btn active" data-diff="standard" onclick="setDifficulty('standard')">Standard</div>
@@ -373,7 +370,6 @@ function getEffectivePrices(item) {
     return { price: item.price, soloPrice: item.soloPrice, prices: item.prices };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 
 function renderGrid() {
     const grid = document.getElementById("mainGrid");
@@ -468,7 +464,6 @@ function applyRules() {
         const el = document.getElementById(`item-${index}`);
         if (!el) return;
 
-        // Casual hidden check
         const casualHide = isCasualHidden(item);
         el.classList.toggle('casual-hidden', casualHide);
         if (casualHide) {
@@ -506,7 +501,7 @@ function setDifficulty(diff) {
     document.querySelectorAll('[data-diff]').forEach(b => b.classList.toggle('active', b.dataset.diff === diff));
     updateFormulaText();
     syncMobileSettings();
-    applyRules(); // re-evaluate casual hidden state
+    applyRules(); 
 }
 
 function setMode(mode) {
@@ -534,7 +529,7 @@ function setMode(mode) {
 function validatePlayers(input) {
     let min = 1, max = 1;
     if (currentMode === 'duo') max = 2;
-    else if (currentMode === 'party') max = 20;
+    else if (currentMode === 'party') max = 50;
     playerCount = Math.max(min, Math.min(max, parseInt(input.value) || min));
     input.value = playerCount;
     applyRules();
