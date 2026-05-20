@@ -2,625 +2,547 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nullscape Calculator</title>
-    <link rel="icon" type="image/svg+xml" href="https://www.gstatic.com/lamda/images/favicon_v1_150160d13988650c76.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nullscape Hack Gui - Rayfield Engine Simulation</title>
     <style>
-        html { zoom: 0.9; }
         :root {
-            --primary: #c285ff;
-            --primary-glow: rgba(194, 133, 255, 0.5);
-            --extreme: #ffab66;
-            --extreme-glow: rgba(255, 171, 102, 0.5);
-            --casual: #3ebfff;
-            --casual-glow: rgba(91, 200, 255, 0.5);
-            --curse: #5ad6ff;
-            --curse-glow: rgba(102, 217, 255, 0.6);
-            --bg-dark: #0f0f12;
-            --card-bg: #1a1a1f;
-            --card-border: rgba(0, 0, 0, 0.212);
-            --text-main: #ffffff;
-            --text-dim: #b8b8b8;
-            --text-v-dim: #757575;
-            --accent-red: #ff7070;
-
-            --theme: var(--primary);
-            --theme-glow: var(--primary-glow);
+            --bg-main: #121214;
+            --bg-sidebar: #18181c;
+            --bg-card: #1f1f24;
+            --bg-hover: #2a2a32;
+            --accent: #4f46e5;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #2e2e38;
         }
 
-        body.mode-extreme {
-            --theme: var(--extreme);
-            --theme-glow: var(--extreme-glow);
-        }
-        body.mode-casual {
-            --theme: var(--casual);
-            --theme-glow: var(--casual-glow);
-            background: radial-gradient(circle at 50% 50%, #0d1a2e 0%, #0a0f18 100%);
-        }
-        body.mode-casual #particles-js {
-            background: radial-gradient(circle at 50% 50%, #0d1f35 0%, #090e18 100%);
-        }
-        body.mode-casual #particles-js canvas { filter: hue-rotate(160deg); }
-
-        * { box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; min-height: 100vh; }
-
-        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #1e1e35 0%, #0f0f12 100%); transition: background 0.6s; }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        #loading-screen { position: fixed; inset: 0; background: var(--bg-dark); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: 0.8s; }
-        .loader-ring { width: 60px; height: 60px; border: 3px solid var(--card-border); border-top: 3px solid var(--theme); border-radius: 50%; animation: spin 1s linear infinite; }
-
-        .container { max-width: 2200px; margin: 0 auto; padding: 20px; opacity: 0; transform-origin: top center; transition: 1s cubic-bezier(0.2, 1, 0.2, 1); }
-        .container.loaded { opacity: 1; transform: scale(0.95); animation: fadeInUp 0.8s ease-out forwards; }
-
-        header { text-align: center; margin-bottom: 25px; }
-        h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin: 0;
-            background: linear-gradient(to right, #fff, var(--theme));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: -1px; filter: drop-shadow(0 0 10px var(--theme-glow));
-            transition: filter 0.4s;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
         }
 
-        .main-layout { display: grid; grid-template-columns: 1fr 320px; gap: 25px; }
-        .glass-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; padding: 25px; box-shadow: 0 15px 45px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02); }
-
-        .section-title {
-            font-size: 0.9rem; text-transform: uppercase; letter-spacing: 4px;
-            color: var(--theme); margin-bottom: 20px; font-weight: 800;
-            display: flex; align-items: center; gap: 12px;
-            text-shadow: 0 0 15px var(--theme-glow); transition: color 0.4s, text-shadow 0.4s;
+        body {
+            background-color: #09090b;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .settings-grid { display: flex; flex-direction: column; gap: 20px; }
-        .input-group label { display: block; margin-bottom: 10px; font-size: 0.85rem; color: var(--text-dim); font-weight: 600; }
-
-        input[type="number"] { width: 100%; background: rgba(0,0,0,0.4); border: 2px solid var(--card-border); border-radius: 16px; padding: 12px; color: white; font-size: 1.4rem; font-weight: 800; text-align: center; transition: 0.3s; }
-        input[type="number"]:focus { border-color: var(--theme); outline: none; background: rgba(0,0,0,0.6); box-shadow: 0 0 15px var(--theme-glow); }
-        input[type="number"]:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .mode-selector { display: grid; gap: 8px; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); padding: 12px; border-radius: 14px; color: var(--text-dim); cursor: pointer; font-weight: 600; transition: 0.3s; text-align: center; font-size: 0.8rem; }
-        .mode-btn.active { background: var(--theme); color: white; box-shadow: 0 0 25px var(--theme-glow); border-color: var(--theme); }
-
-        .curse-toggle-btn {
-            width: 100%; background: rgba(102, 217, 255, 0.07); border: 1px solid rgba(102, 217, 255, 0.25);
-            border-radius: 14px; padding: 12px 16px; color: var(--text-dim); cursor: pointer; font-weight: 700;
-            display: flex; align-items: center; justify-content: space-between;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .curse-toggle-btn.active {
-            background: rgba(102, 217, 255, 0.2); border-color: var(--curse); color: var(--curse);
-            box-shadow: 0 0 20px var(--curse-glow), inset 0 0 10px rgba(102, 217, 255, 0.2);
-            text-shadow: 0 0 8px var(--curse-glow); transform: scale(1.02);
-        }
-        .curse-pill { font-size: 0.65rem; padding: 3px 8px; border-radius: 20px; background: rgba(102, 217, 255, 0.12); border: 1px solid rgba(102, 217, 255, 0.2); transition: 0.3s; }
-        .curse-toggle-btn.active .curse-pill { background: var(--curse); color: #000; border-color: var(--curse); }
-
-        .partyplus-btn {
-            width: 100%; background: rgba(194, 133, 255, 0.07); border: 1px solid rgba(194, 133, 255, 0.25);
-            border-radius: 14px; padding: 12px 16px; color: var(--text-dim); cursor: pointer; font-weight: 700;
-            display: flex; align-items: center; justify-content: space-between;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .partyplus-btn.active {
-            background: rgba(194, 133, 255, 0.2); border-color: var(--primary); color: var(--primary);
-            box-shadow: 0 0 20px var(--primary-glow), inset 0 0 10px rgba(194, 133, 255, 0.15);
-            text-shadow: 0 0 8px var(--primary-glow); transform: scale(1.02);
-        }
-        .pp-pill { font-size: 0.65rem; padding: 3px 8px; border-radius: 20px; background: rgba(194,133,255,0.12); border: 1px solid rgba(194,133,255,0.3); transition: 0.3s; }
-        .partyplus-btn.active .pp-pill { background: var(--primary); color: #000; border-color: var(--primary); }
-
-        .upgrades-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(370px, 1fr)); gap: 12px; align-items: stretch; }
-
-        .upgrade-item {
-            display: flex; align-items: center; gap: 12px; padding: 14px 18px;
-            border-radius: 20px; background: rgba(255,255,255,0.04); border: 1px solid transparent;
-            cursor: pointer; transition: 0.3s; height: 85px; box-sizing: border-box; position: relative;
-        }
-        .upgrade-item.active { background: rgba(194, 133, 255, 0.15); border-color: var(--theme); }
-        body.mode-casual .upgrade-item.active { background: rgba(91, 200, 255, 0.12); }
-        .upgrade-item.disabled { opacity: 0.3; pointer-events: none; }
-
-        /* Casual-hidden items fade out with a visual indicator */
-        .upgrade-item.casual-hidden {
-            opacity: 0.18;
-            pointer-events: none;
-            filter: grayscale(0.8);
-        }
-        .upgrade-item.casual-hidden::after {
-            content: 'Not in Casual';
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.6rem;
-            color: var(--casual);
-            border: 1px solid var(--casual);
-            padding: 2px 7px;
+        /* GUI Main Shell window */
+        .window {
+            width: 820px;
+            height: 540px;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            opacity: 0.7;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
 
-        .stack-indicator { display: flex; gap: 4px; margin-top: 6px; }
-        .stack-dot { width: 14px; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; transition: 0.3s; }
-        .stack-dot.filled { background: var(--theme); box-shadow: 0 0 8px var(--theme-glow); }
-
-        .icon-wrapper { width: 40px; height: 40px; background: rgba(0,0,0,0.5); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
-        .icon-wrapper img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
-
-        .info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; justify-content: center; }
-        .name { font-weight: 700; font-size: 0.95rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .price-tag { font-size: 0.8rem; color: var(--text-dim); }
-        .lv-badge { font-size: 0.65rem; color: var(--text-v-dim); border: 1px solid var(--card-border); padding: 2px 6px; border-radius: 6px; background: rgba(0,0,0,0.2); flex-shrink: 0; margin-left: auto; }
-
-        .total-val {
-            font-size: 4rem; font-weight: 800; color: var(--theme);
-            text-shadow: 0 0 30px var(--theme-glow); transition: color 0.4s, text-shadow 0.4s;
+        /* Title Top Bar */
+        .title-bar {
+            height: 48px;
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
         }
 
-        .formula-text { font-size: 0.7rem; color: var(--text-v-dim); margin-bottom: 15px; line-height: 1.6; display: block; }
-        #curse-indicator { font-size: 0.7rem; font-weight: 800; color: var(--curse); margin-bottom: 5px; opacity: 0; transition: 0.3s; text-shadow: 0 0 10px var(--curse-glow); }
-
-        .mobile-settings-overlay {
-            position: fixed; top: 0; left: 0; width: 100%;
-            background: #1a1a1f; z-index: 2000; padding: 20px;
-            transform: translateY(-100%); transition: 0.5s;
-            max-height: 100vh; overflow-y: auto;
+        .title-text {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
-        .mobile-settings-overlay.open { transform: translateY(0); }
 
-        .mobile-bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 95px;
-            background: #1a1a1f; border-top: 1px solid var(--card-border);
-            display: none; align-items: center; justify-content: space-between;
-            padding: 0 20px; z-index: 1001;
+        .title-subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-left: 8px;
         }
-        .mobile-total-wrap .price { font-size: 2rem; font-weight: 800; color: var(--theme); transition: color 0.3s; }
 
-        @media (max-width: 1000px) {
-            .main-layout { grid-template-columns: 1fr; }
-            .sticky-sidebar { display: none; }
-            .mobile-bottom-nav { display: flex; }
-            .container { padding-bottom: 110px; }
+        .window-controls {
+            display: flex;
+            gap: 8px;
         }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #3f3f46;
+        }
+        .control-dot.close { background-color: #ef4444; }
+
+        /* Split Screen Container */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Left Hand Vertical Sidebar Navigation */
+        .sidebar {
+            width: 190px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            padding: 12px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            text-align: left;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background-color: var(--bg-hover);
+            color: var(--text-main);
+            border-left-color: var(--accent);
+        }
+
+        /* Workspace Content Views */
+        .content-panel {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        /* Styling for Sections, Cards and Elements */
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 18px 0 8px 2px;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        .section-title:first-child { margin-top: 0; }
+
+        .paragraph-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .paragraph-card h4 {
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: #fca5a5;
+        }
+        .paragraph-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .btn-element, .toggle-element, .dropdown-element, .keybind-element, .label-element {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .btn-element {
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            width: 100%;
+            text-align: left;
+            color: var(--text-main);
+        }
+        .btn-element:hover {
+            background-color: var(--bg-hover);
+            border-color: #444452;
+        }
+
+        .label-element {
+            color: var(--text-muted);
+            border-style: dashed;
+        }
+
+        /* Toggle Switches */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #3f3f46;
+            transition: .2s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px; width: 14px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        /* Selection Dropdowns */
+        .dropdown-select {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Custom Keybind Tags */
+        .key-badge {
+            background-color: #2e2e38;
+            border: 1px solid #444452;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: monospace;
+            color: #6366f1;
+            font-weight: bold;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 18px 0;
+        }
+
+        /* UI Pop-up Notification Engine */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: -320px;
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            padding: 14px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+            transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+        }
+        .notification.show { right: 20px; }
+        .notif-title { font-size: 13px; font-weight: bold; color: var(--accent); margin-bottom: 4px; }
+        .notif-body { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
     </style>
 </head>
-<body class="mode-standard">
+<body>
 
-<div id="particles-js"></div>
-
-<div class="mobile-settings-overlay" id="mobileDrawer">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <span style="font-weight: 800; color: var(--theme); letter-spacing: 2px;">SETTINGS</span>
-        <button onclick="toggleMobileSettings()" style="background: none; border: none; color: white; font-size: 1.5rem;">✕</button>
-    </div>
-    <div id="mobile-settings-content"></div>
-</div>
-
-<div id="loading-screen">
-    <div class="loader-ring"></div>
-    <p style="margin-top: 20px; letter-spacing: 3px;">Loading</p>
-</div>
-
-<div class="container" id="main-ui">
-    <header><h1>Nullscape Calculator</h1></header>
-
-    <div class="main-layout">
-        <div class="glass-card">
-            <div class="section-title"><span>✦</span> Upgrades</div>
-            <div class="upgrades-grid" id="mainGrid"></div>
+    <div class="window">
+        <div class="title-bar">
+            <div>
+                <span class="title-text">Nullscape Hack Gui</span>
+                <span class="title-subtitle">by Ncc | Toggle Key: K</span>
+            </div>
+            <div class="window-controls">
+                <div class="control-dot"></div>
+                <div class="control-dot close"></div>
+            </div>
         </div>
 
-        <div class="sticky-sidebar">
-            <div class="glass-card" id="pc-settings-box">
-                <div class="section-title">Settings</div>
-                <div class="settings-grid">
+        <div class="main-container">
+            <div class="sidebar">
+                <button class="tab-btn active" onclick="openTab('main')">Main</button>
+                <button class="tab-btn" onclick="openTab('upgrades')">Upgrades</button>
+                <button class="tab-btn" onclick="openTab('enemy')">Enemy</button>
+                <button class="tab-btn" onclick="openTab('map')">Map</button>
+                <button class="tab-btn" onclick="openTab('player')">Player</button>
+                <button class="tab-btn" onclick="openTab('keybinds')">Keybinds</button>
+                <button class="tab-btn" onclick="openTab('debug')">Debug</button>
+            </div>
 
-                    <div class="input-group">
-                        <label>Difficulty</label>
-                        <div class="mode-selector" style="grid-template-columns: 1fr 1fr 1fr;">
-                            <div class="mode-btn" data-diff="casual" onclick="setDifficulty('casual')">Casual</div>
-                            <div class="mode-btn active" data-diff="standard" onclick="setDifficulty('standard')">Standard</div>
-                            <div class="mode-btn" data-diff="extreme" onclick="setDifficulty('extreme')">Extreme</div>
-                        </div>
-                    </div>
+            <div id="main" class="content-panel active">
+                <div class="section-title">Gifts</div>
+                <div class="paragraph-card">
+                    <h4>Keep In Mind</h4>
+                    <p>if collection don't start spam the button until it works</p>
+                </div>
+                <button class="btn-element" onclick="triggerNotif('Collection Engine', 'Fired collect loop for: normal')">Collect Normal Gifts</button>
+                <button class="btn-element" onclick="triggerNotif('Collection Engine', 'Fired collect loop for: golden')">Collect Golden Gifts</button>
+                <button class="btn-element" onclick="triggerNotif('Collection Engine', 'Stopped active tween collection loops.')">Stop Collecting</button>
+            </div>
 
-                    <div class="input-group">
-                        <label>Mode</label>
-                        <div class="mode-selector" style="grid-template-columns: 1fr 1fr 1fr;">
-                            <div class="mode-btn active" data-mode="solo" onclick="setMode('solo')">Solo</div>
-                            <div class="mode-btn" data-mode="duo" onclick="setMode('duo')">Duo</div>
-                            <div class="mode-btn" data-mode="party" onclick="setMode('party')">Party/Party+</div>
-                        </div>
-                    </div>
+            <div id="upgrades" class="content-panel">
+                <div class="label-element">You can add upgrades. (Simulation Active)</div>
+                <div class="paragraph-card">
+                    <h4>Keep In Mind</h4>
+                    <p>Upgrades you add are Temporary even if you see them in the Menu Tab</p>
+                </div>
+                <div class="divider"></div>
+                
+                <div id="dynamic-upgrades-target"></div>
+            </div>
 
-                    <div class="input-group">
-                        <label id="player-label">Player Count</label>
-                        <input type="number" class="player-input" id="pInput" min="1" max="1" value="1" onchange="validatePlayers(this)">
-                    </div>
+            <div id="enemy" class="content-panel">
+                <div class="section-title">All Enemies</div>
+                <button class="btn-element" onclick="triggerNotif('Executor Status', 'All Workspace enemy assets purged.')">Destroy All</button>
+                <button class="btn-element" onclick="triggerNotif('Executor Status', 'Client-sided Workspace folders safely cleared.')">Destroy Client-sided Enemies Only</button>
+                <div class="divider"></div>
 
-                    <div class="input-group" id="partyplus-wrap" style="display:none;">
-                        <button class="partyplus-btn" id="partyplusBtnPC" onclick="togglePartyPlus()">
-                            <span>Party+</span>
-                            <span class="pp-pill">÷1.125</span>
-                        </button>
-                    </div>
+                <div id="dynamic-enemies-target"></div>
 
-                    <div class="input-group">
-                        <label>Discounts</label>
-                        <button class="curse-toggle-btn" id="curseBtnPC" onclick="toggleCurse()">
-                            <span>Nothing Curse</span>
-                            <span class="curse-pill">–15% OFF</span>
-                        </button>
-                    </div>
+                <div class="section-title">Guardian (CANNOT BE DISABLED)</div>
+                <div class="toggle-element">
+                    <span>Create Protection</span>
+                    <label class="switch"><input type="checkbox" onchange="toggleState('Guardian Protection', this.checked)"><span class="slider"></span></label>
+                </div>
+
+                <div class="section-title">Blossom</div>
+                <div class="label-element">Section header active without explicit controls</div>
+
+                <div class="section-title">Reality Break</div>
+                <div class="toggle-element">
+                    <span>Auto Destroy</span>
+                    <label class="switch"><input type="checkbox" onchange="toggleState('Reality Break Auto Destroy', this.checked)"><span class="slider"></span></label>
+                </div>
+                 
+                <div class="toggle-element">
+                    <span>Destroy Celestial</span>
+                    <label class="switch"><input type="checkbox" onchange="toggleState('Destroy Celestial', this.checked)"><span class="slider"></span></label>
                 </div>
             </div>
 
-            <div class="glass-card" style="margin-top: 20px; text-align: center;">
-                <span style="font-size: 0.8rem; color: var(--text-dim); font-weight: 700;">TOTAL GIFT</span>
-                <div id="curse-indicator">Nothing Discount is on</div>
-                <div class="total-val" id="result">0</div>
-                <div class="formula-text" id="formulaText">ceil(base × √players)</div>
-                <button onclick="clearAll()" style="width: 100%; background: rgba(255, 94, 94, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 14px; cursor: pointer; font-weight: 700;">Reset All</button>
+            <div id="map" class="content-panel">
+                <div class="section-title">Void</div>
+                <div class="toggle-element">
+                    <span>Anti Void</span>
+                    <label class="switch"><input type="checkbox" onchange="toggleState('Anti Void Status', this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="dropdown-element">
+                    <span>Anti Void Setting</span>
+                    <select class="dropdown-select" onchange="triggerNotif('Dropdown Modified', 'Option selected: ' + this.value)">
+                        <option>1. Teleport to Spawn</option>
+                        <option>2. Closest Gift</option>
+                    </select>
+                </div>
+
+                <div class="section-title">Hazards</div>
+                <div class="toggle-element">
+                    <span>Tripmine Protection</span>
+                    <label class="switch"><input type="checkbox" onchange="toggleState('Tripmine Protection', this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="toggle-element">
+                    <span>Disable Seamines</span>
+                    <label class="switch"><input type="checkbox" onchange="toggleState('Disable Seamines', this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="toggle-element">
+                    <span>Disable Oblivion</span>
+                    <label class="switch"><input type="checkbox" onchange="toggleState('Disable Oblivion', this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="toggle-element">
+                    <span>Destroy Fake Beacons</span>
+                    <label class="switch"><input type="checkbox" onchange="toggleState('Destroy Fake Beacons', this.checked)"><span class="slider"></span></label>
+                </div>
+            </div>
+
+            <div id="player" class="content-panel">
+                <div class="section-title">Humanoid</div>
+                <div class="toggle-element">
+                    <span>Destroy Razorbloom (VISIBLE TO OTHERS)</span>
+                    <label class="switch"><input type="checkbox" onchange="toggleState('Razorbloom Destructor', this.checked)"><span class="slider"></span></label>
+                </div>
+            </div>
+
+            <div id="keybinds" class="content-panel">
+                <div class="section-title">Keybind Actions</div>
+                <div class="keybind-element"><span>Collect Normal Gifts</span><span class="key-badge">One</span></div>
+                <div class="keybind-element"><span>Collect Golden Gifts</span><span class="key-badge">Two</span></div>
+                <div class="keybind-element"><span>Get Medal</span><span class="key-badge">Three</span></div>
+                <div class="keybind-element"><span>Disable All Enemies</span><span class="key-badge">Four</span></div>
+                <div class="keybind-element"><span>Reset Abilities</span><span class="key-badge">Five</span></div>
+                <div class="keybind-element"><span>Teleport to Spawn</span><span class="key-badge">Six</span></div>
+                <div class="keybind-element"><span>Teleport to Beacon</span><span class="key-badge">Seven</span></div>
+
+                <div class="section-title">Have Keybinds Enabled</div>
+                <div class="toggle-element"><span>Collect Normal Gifts Keybind</span><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+                <div class="toggle-element"><span>Collect Golden Gifts Keybind</span><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+                <div class="toggle-element"><span>Get Medal Keybind</span><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+                <div class="toggle-element"><span>Disable All Enemies Keybind</span><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+                <div class="toggle-element"><span>Reset Abilities</span><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+                <div class="toggle-element"><span>Teleport to Spawn Keybind</span><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+                <div class="toggle-element"><span>Teleport to Beacon Keybind</span><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+            </div>
+
+            <div id="debug" class="content-panel">
+                <div class="section-title">Developer Tools</div>
+                <button class="btn-element" onclick="triggerNotif('Clipboard Operation', 'ReplicatedStorage.CodeVal string sent to clipboard.')">Copy Game Code</button>
+                <button class="btn-element" onclick="triggerNotif('Remote Network Call', 'Fired Network FireServer on events.Died loop.')" style="color: #ef4444;">Kill Player</button>
             </div>
         </div>
     </div>
-</div>
 
-<div class="mobile-bottom-nav">
-    <div class="mobile-total-wrap">
-        <span style="font-size: 0.7rem; color: var(--text-dim); display: block; font-weight: 700;">TOTAL</span>
-        <span class="price" id="mobile-result">0</span>
+    <div id="notification-toast" class="notification">
+        <div class="notif-title" id="notif-title">Notification</div>
+        <div class="notif-body" id="notif-body">Rayfield interface initialized.</div>
     </div>
-    <div style="display: flex; gap: 10px;">
-        <button onclick="clearAll()" style="width:48px; height:48px; border-radius:12px; border:1px solid var(--accent-red); background:rgba(255, 94, 94, 0.1); color:var(--accent-red); font-weight: 800;">↺</button>
-        <button id="mobileSettingsBtn" onclick="toggleMobileSettings()" style="background: var(--primary); color: white; padding: 0 20px; border-radius: 12px; height: 48px; border:none; font-weight:800; box-shadow: 0 5px 15px var(--primary-glow);">SETTINGS</button>
-    </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-<script>
+    <script>
+        // Array configurations extracted directly from Lua Script loops
+        const clientUpgrades = [
+            "MatrixTetrahedron", "Adrenaline", "HighlightGifts", "AdvancedGravityCoil",
+            "SportShoes", "TheOrb", "RealWings", "GraceWings", "RadarPlayer",
+            "RadarInstruments", "HighlightTripmines", "IceSkates", "SwiftnessRing",
+            "GiftMagnet", "SharkTail", "EnemyOnTop", "PocketBell", "NinjaBelt",
+            "Helmet", "DoubleJump", "RadarAltars"
+        ];
 
-const CASUAL_OVERRIDES = {
-    "Grace Wings":                             { hidden: true },
-    "Defuse Kit":                              { hidden: true },
-    "Subspacial Barrier":                      { hidden: true },
-    "Radar Module : Tripmines":                { hidden: true },
+        const structuredEnemies = [
+            { name: "Bell", toggles: ["Auto Disable", "Auto Destroy"] },
+            { name: "Mart", toggles: ["Auto Disable", "Auto Destroy"] },
+            { name: "Husk", toggles: ["Auto Disable", "Auto Destroy"] },
+            { name: "Springer", toggles: ["Auto Disable Shockwaves", "Auto Destroy"] },
+            { name: "ICBM", toggles: ["Auto Destroy"] },
+            { name: "Baby", toggles: ["Auto Disable", "Auto Destroy"] },
+            { name: "Flesh", toggles: ["Auto Disable", "Auto Destroy"] },
+            { name: "Operator", toggles: ["Auto Destroy"] },
+            { name: "Kolona", toggles: ["Auto Destroy"] },
+            { name: "Telefragger", toggles: ["Auto Disable", "Auto Destroy"] },
+            { name: "Sigil", toggles: ["Auto Destroy"] },
+            { name: "Voidbreaker", toggles: ["Auto Destroy"] },
+            { name: "Cadence", toggles: ["Auto Disable", "Auto Destroy"] },
+            { name: "Voidbound Baby", toggles: ["Auto Disable", "Auto Destroy"] },
+            { name: "Scrapmaw", toggles: ["Auto Destroy"] }
+        ];
 
-    "Shield":                    { casualPrice: 2000,  casualSoloPrice: 1000 },
-    "Ice Skates":                { casualPrice: 400,   casualSoloPrice: 300 },
-    "Ninja Belt":                { casualPrice: 700,   casualSoloPrice: 500 },
-    "Matrix Tetrahedron":        { casualPrice: 1500,  casualSoloPrice: 1500 },
-    "Shark Tail":                { casualPrice: 800,   casualSoloPrice: 800 },
-    "Drowned Ægis":              { casualPrice: 4000,  casualSoloPrice: 4000 },
-    "Panic Necklace":            { casualPrice: 1500,  casualSoloPrice: 1500 },
-    "Sport Shoes":               { casualPrice: 1000,  casualSoloPrice: 1000 },
-    "Gift Magnet":               { casualPrices: [750, 1050, 1350] },
-    "Gift Idol":                 { casualPrices: [3000, 6000, 9000, 12000, 15000] },
-    "Miniature Hourglass":       { casualPrice: 1500,  casualSoloPrice: 1500 },
-};
+        // Dynamic element rendering engine injection
+        function buildDynamicElements() {
+            // Populate Upgrade View
+            const upgradeRoot = document.getElementById('dynamic-upgrades-target');
+            clientUpgrades.forEach(u => {
+                const section = document.createElement('div');
+                section.className = 'section-title';
+                section.innerText = u;
+                
+                const labelCard = document.createElement('div');
+                labelCard.className = 'toggle-element';
+                labelCard.innerHTML = `<span>Current Tier Tracker</span><span style="color: var(--accent); font-weight: bold;" id="tier-${u}">Current: 0</span>`;
+                
+                const btnAdd = document.createElement('button');
+                btnAdd.className = 'btn-element';
+                btnAdd.innerText = 'Add One';
+                btnAdd.onclick = () => modifyUpgrade(u, 1);
 
+                const btnSub = document.createElement('button');
+                btnSub.className = 'btn-element';
+                btnSub.innerText = 'Remove One';
+                btnSub.onclick = () => modifyUpgrade(u, -1);
 
-const upgradesList = [
-    {name:"Adrenaline",                 price:50,   soloPrice:50,   icon:"assets/Adrenaline.png",                  id:"opt-adrenaline", level:3,  currentStack:0},
-    {name:"Business License",           prices:[75, 188],           icon:"assets/Business_License.png",            level:3,  currentStack:0, maxStack:2},
-    {name:"Defuse Kit",                 price:30,   soloPrice:30,   icon:"assets/Defuse_Kit.png",                  level:3,  currentStack:0},
-    {name:"Paycheck",                   price:55,   soloPrice:55,   icon:"assets/Paycheck.png",                    level:3,  currentStack:0},
-    {name:"Swiftness Ring",             price:80,   soloPrice:80,   icon:"assets/Swiftness_Ring.png",              level:3,  currentStack:0},
-    {name:"Radar",                      price:175,  soloPrice:175,  icon:"assets/Radar.png",                       level:5,  currentStack:0},
-    {name:"Better Jump Pads",           price:50,   soloPrice:50,   icon:"assets/Better_Jump_Pads.png",            level:5,  currentStack:0},
-    {name:"Double Jump",                price:150,  soloPrice:150,  icon:"assets/Double_Jump.png",                 level:5,  currentStack:0},
-    {name:"Grapple Points",             price:100,  soloPrice:100,  icon:"assets/Grapple_Points.png",              level:5,  currentStack:0},
-    {name:"Tria Orb",                   price:100,  soloPrice:100,  icon:"assets/Tria_Orb.png",                    level:5,  currentStack:0},
-    {name:"Medal",                      price:100,  soloPrice:100,  icon:"assets/Medal.png",                       level:5,  currentStack:0},
-    {name:"Advanced Gravity Coil",      price:600,  soloPrice:600,  icon:"assets/Advanced_Gravity_Coil.png",       level:8,  currentStack:0},
-    {name:"Ice Skates",                 price:400,  soloPrice:300,  icon:"assets/Ice_Skates.png",                  level:8,  currentStack:0},
-    {name:"Fanny Pack",                 price:300,  soloPrice:300,  icon:"assets/Fanny_Pack.png",                  level:8,  currentStack:0},
-    {name:"Grace Wings",                price:300,  soloPrice:200,  icon:"assets/Grace_Wings.png",                 level:8,  currentStack:0},
-    {name:"Helmet",                     price:400,  soloPrice:400,  icon:"assets/Helmet.png",                      level:8,  currentStack:0},
-    {name:"Last Robloxian Standing",    price:300,  soloPrice:300,  icon:"assets/Last_Robloxian_Standing.png",     id:"opt-lrs", level:8, currentStack:0},
-    {name:"Radar Module : Altars",      price:300,  soloPrice:300,  icon:"assets/Radar_Module_Altars.png",         level:8,  currentStack:0},
-    {name:"Radar Module : Tripmines",   price:400,  soloPrice:400,  icon:"assets/Radar_Module_Tripmines.png",      level:8,  currentStack:0},
-    {name:"Radar Module : Enemies",     price:200,  soloPrice:200,  icon:"assets/Radar_Module_Enemies.png",        level:8,  currentStack:0},
-    {name:"More Altars",                price:600,  soloPrice:600,  icon:"assets/More_Altars.png",                 level:10, currentStack:0},
-    {name:"Pocket Bell",                price:300,  soloPrice:300,  icon:"assets/Pocket_Bell.png",                 level:10, currentStack:0},
-    {name:"Ninja Belt",                 price:700,  soloPrice:500,  icon:"assets/Ninja_Belt.png",                  level:13, currentStack:0},
-    {name:"Subspacial Barrier",         prices:[1000, 1500],        icon:"assets/Subspacial_Barrier.png",          level:13, currentStack:0, maxStack:2},
-    {name:"Large Grapple Points",       price:500,  soloPrice:500,  icon:"assets/Large_Grapple_Points.png",        level:13, currentStack:0},
-    {name:"Gift Magnet",                prices:[1500, 2100, 2700],  icon:"assets/Gift_Magnet.png",                 level:15, currentStack:0, maxStack:3},
-    {name:"Matrix Tetrahedron",         price:2500, soloPrice:2500, icon:"assets/Matrix_Tetrahedron.png",          level:15, currentStack:0},
-    {name:"Shield",                     price:4000, soloPrice:1000, icon:"assets/Shield.png",                      level:15, currentStack:0},
-    {name:"Sport Shoes",                price:1350, soloPrice:1350, icon:"assets/Sport_Shoes.png",                 level:15, currentStack:0},
-    {name:"Shark Tail",                 price:1200, soloPrice:1200, icon:"assets/Shark_Tail.png",                  level:15, currentStack:0},
-    {name:"Radar Module : Instruments", price:1000, soloPrice:1000, icon:"assets/Radar_Module_Instruments.png",    level:18, currentStack:0},
-    {name:"Panic Necklace",             price:3000, soloPrice:3000, icon:"assets/Panic_Necklace.png",              level:18, currentStack:0},
-    {name:"Drowned Ægis",               price:6000, soloPrice:6000, icon:"assets/DrownedAegis.png",               level:20, currentStack:0},
-    {name:"Miniature Hourglass",        price:3000, soloPrice:3000, icon:"assets/Miniature_Hourglass.png",         level:20, currentStack:0},
-    {name:"Gift Idol",                  prices:[4000, 8000, 12000, 16000, 20000], icon:"assets/Gift_Idol.png",     level:20, currentStack:0, maxStack:5},
-];
+                upgradeRoot.appendChild(section);
+                upgradeRoot.appendChild(labelCard);
+                upgradeRoot.appendChild(btnAdd);
+                upgradeRoot.appendChild(btnSub);
+            });
 
-let currentDifficulty = 'standard';
-let currentMode = 'solo';
-let playerCount = 1;
-let partyPlusActive = false;
-let nothingCurseActive = false;
+            // Populate Enemies View
+            const enemyRoot = document.getElementById('dynamic-enemies-target');
+            structuredEnemies.forEach(e => {
+                const section = document.createElement('div');
+                section.className = 'section-title';
+                section.innerText = e.name;
+                enemyRoot.appendChild(section);
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-function isCasualHidden(item) {
-    if (currentDifficulty !== 'casual') return false;
-    return !!(CASUAL_OVERRIDES[item.name] && CASUAL_OVERRIDES[item.name].hidden);
-}
-
-function getEffectivePrices(item) {
-    // Returns { price, soloPrice, prices } adjusted for casual overrides
-    if (currentDifficulty === 'casual' && CASUAL_OVERRIDES[item.name]) {
-        const ov = CASUAL_OVERRIDES[item.name];
-        return {
-            price:     ov.casualPrice     !== undefined ? ov.casualPrice     : item.price,
-            soloPrice: ov.casualSoloPrice !== undefined ? ov.casualSoloPrice : item.soloPrice,
-            prices:    ov.casualPrices    !== undefined ? ov.casualPrices    : item.prices,
-        };
-    }
-    return { price: item.price, soloPrice: item.soloPrice, prices: item.prices };
-}
-
-
-function renderGrid() {
-    const grid = document.getElementById("mainGrid");
-    grid.innerHTML = upgradesList.map((item, index) => {
-        let dots = '';
-        if (item.maxStack > 1) {
-            for (let i = 0; i < item.maxStack; i++) {
-                dots += `<div class="stack-dot" id="dot-${index}-${i}"></div>`;
-            }
-        }
-        return `
-            <div class="upgrade-item" id="item-${index}" onclick="cycleUpgrade(${index}, this)">
-                <div class="icon-wrapper"><img src="${item.icon}" onerror="this.src='https://via.placeholder.com/50?text=?'"></div>
-                <div class="info">
-                    <span class="name">${item.name}</span>
-                    <span class="price-tag" id="price-text-${index}">Cost: 0</span>
-                    <div class="stack-indicator">${dots}</div>
-                </div>
-                <span class="lv-badge">Lv${item.level}</span>
-            </div>
-        `;
-    }).join('');
-    applyRules();
-    updateVisualPrices();
-}
-
-function cycleUpgrade(index, el) {
-    if (el.classList.contains('disabled') || el.classList.contains('casual-hidden')) return;
-    const item = upgradesList[index];
-    const max = item.maxStack || 1;
-    item.currentStack = item.currentStack >= max ? 0 : item.currentStack + 1;
-    el.classList.toggle('active', item.currentStack > 0);
-    if (item.maxStack > 1) {
-        for (let i = 0; i < item.maxStack; i++) {
-            const dot = document.getElementById(`dot-${index}-${i}`);
-            if (dot) dot.classList.toggle('filled', i < item.currentStack);
-        }
-    }
-    calculate();
-}
-
-function computePrice(item, stackOverride) {
-    const s = stackOverride !== undefined ? stackOverride : item.currentStack;
-    if (s === 0) return 0;
-
-    const eff = getEffectivePrices(item);
-    let base = 0;
-    if (eff.prices) {
-        base = eff.prices[s - 1] || 0;
-    } else {
-        base = (currentMode === 'solo' && eff.soloPrice !== undefined) ? eff.soloPrice : eff.price;
-    }
-
-    let scaled = playerCount === 1 ? base : Math.ceil(base * Math.sqrt(playerCount));
-    if (currentMode === 'party' && partyPlusActive)   scaled = Math.ceil(scaled / 1.125);
-    if (currentMode === 'party' && playerCount > 8)   scaled = Math.ceil(scaled / 1.125);
-    if (currentDifficulty === 'extreme') scaled = Math.ceil(scaled * 1.15);
-    if (nothingCurseActive)              scaled = Math.ceil(scaled * 0.85);
-    return scaled;
-}
-
-function updateVisualPrices() {
-    upgradesList.forEach((item, index) => {
-        const displayStack = item.currentStack > 0 ? item.currentStack : 1;
-        const previewCost = computePrice(item, displayStack);
-        let text;
-        if (item.maxStack > 1) {
-            text = `Stack ${displayStack}: ${previewCost.toLocaleString()}`;
-        } else {
-            text = `Cost: ${previewCost.toLocaleString()}`;
-        }
-        const el = document.getElementById(`price-text-${index}`);
-        if (el) el.textContent = text;
-    });
-}
-
-function calculate() {
-    let total = 0;
-    upgradesList.forEach(item => {
-        if (item.currentStack > 0 && !isCasualHidden(item)) total += computePrice(item);
-    });
-    document.getElementById("result").textContent = total.toLocaleString();
-    const indicator = document.getElementById("curse-indicator");
-    if (indicator) indicator.style.opacity = nothingCurseActive ? "1" : "0";
-    const mob = document.getElementById("mobile-result");
-    if (mob) mob.textContent = total.toLocaleString();
-    updateVisualPrices();
-}
-
-function applyRules() {
-    upgradesList.forEach((item, index) => {
-        const el = document.getElementById(`item-${index}`);
-        if (!el) return;
-
-        const casualHide = isCasualHidden(item);
-        el.classList.toggle('casual-hidden', casualHide);
-        if (casualHide) {
-            item.currentStack = 0;
-            el.classList.remove('active');
-            if (item.maxStack > 1) {
-                for (let i = 0; i < item.maxStack; i++) {
-                    const dot = document.getElementById(`dot-${index}-${i}`);
-                    if (dot) dot.classList.remove('filled');
-                }
-            }
+                e.toggles.forEach(t => {
+                    const toggleCard = document.createElement('div');
+                    toggleCard.className = 'toggle-element';
+                    toggleCard.innerHTML = `<span>${t}</span><label class="switch"><input type="checkbox" onchange="toggleState('${e.name} ${t}', this.checked)"><span class="slider"></span></label>`;
+                    enemyRoot.appendChild(toggleCard);
+                });
+            });
         }
 
-        let disabled = false;
-        if (item.id === "opt-adrenaline" && currentMode === 'party') disabled = true;
-        if (item.id === "opt-lrs" && (currentMode !== 'party' || playerCount <= 3)) disabled = true;
-        el.classList.toggle('disabled', disabled && !casualHide);
-        if (disabled) {
-            item.currentStack = 0;
-            el.classList.remove('active');
-            if (item.maxStack > 1) {
-                for (let i = 0; i < item.maxStack; i++) {
-                    const dot = document.getElementById(`dot-${index}-${i}`);
-                    if (dot) dot.classList.remove('filled');
-                }
-            }
+        // Operational Tab switching logic 
+        function openTab(tabId) {
+            const panels = document.querySelectorAll('.content-panel');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            panels.forEach(panel => panel.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
         }
-    });
-    calculate();
-}
 
-function setDifficulty(diff) {
-    currentDifficulty = diff;
-    document.body.className = `mode-${diff}`;
-    document.querySelectorAll('[data-diff]').forEach(b => b.classList.toggle('active', b.dataset.diff === diff));
-    updateFormulaText();
-    syncMobileSettings();
-    applyRules(); 
-}
-
-function setMode(mode) {
-    currentMode = mode;
-    const pInput = document.getElementById('pInput');
-    const ppWrap = document.getElementById('partyplus-wrap');
-    if (mode === 'solo') {
-        playerCount = 1; pInput.value = 1; pInput.min = 1;
-        if (ppWrap) ppWrap.style.display = 'none';
-    } else if (mode === 'duo') {
-        pInput.min = 1; pInput.max = 2;
-        if (playerCount > 2) playerCount = 2;
-        if (ppWrap) ppWrap.style.display = 'none';
-        pInput.value = playerCount;
-    } else if (mode === 'party') {
-        pInput.min = 1; pInput.max = 50;
-        if (ppWrap) ppWrap.style.display = 'block';
-        pInput.value = playerCount;
-    }
-    document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-    syncMobileSettings();
-    applyRules();
-}
-
-function validatePlayers(input) {
-    let min = 1, max = 1;
-    if (currentMode === 'duo') max = 2;
-    else if (currentMode === 'party') max = 50;
-    playerCount = Math.max(min, Math.min(max, parseInt(input.value) || min));
-    input.value = playerCount;
-    applyRules();
-    updateFormulaText();
-    calculate();
-}
-
-function togglePartyPlus() {
-    partyPlusActive = !partyPlusActive;
-    const btn = document.getElementById('partyplusBtnPC');
-    if (btn) btn.classList.toggle('active', partyPlusActive);
-    updateFormulaText();
-    syncMobileSettings();
-    calculate();
-}
-
-function toggleCurse() {
-    nothingCurseActive = !nothingCurseActive;
-    const btn = document.getElementById('curseBtnPC');
-    if (btn) btn.classList.toggle('active', nothingCurseActive);
-    syncMobileSettings();
-    calculate();
-}
-
-function updateFormulaText() {
-    const el = document.getElementById('formulaText');
-    if (!el) return;
-    let formula = 'ceil(base × √players)';
-    if (currentMode === 'party' && playerCount > 8) formula += ' ÷ 1.125 (8+ Players)';
-    if (currentMode === 'party' && partyPlusActive)  formula += ' ÷ 1.125 (Party+)';
-    if (currentDifficulty === 'extreme') formula += ' × 1.15 (Extreme)';
-    if (currentDifficulty === 'casual')  formula += ' (Casual prices)';
-    el.textContent = formula;
-}
-
-function toggleMobileSettings() {
-    document.getElementById('mobileDrawer').classList.toggle('open');
-}
-
-function syncMobileSettings() {
-    const pcBox = document.getElementById('pc-settings-box');
-    const drawer = document.getElementById('mobile-settings-content');
-    if (!drawer || !pcBox) return;
-    drawer.innerHTML = pcBox.innerHTML;
-    const mobInput = drawer.querySelector('.player-input');
-    if (mobInput) { mobInput.value = playerCount; mobInput.disabled = (currentMode === 'solo'); }
-    const mobCurse = drawer.querySelector('.curse-toggle-btn');
-    if (mobCurse) mobCurse.classList.toggle('active', nothingCurseActive);
-    const ppWrapMob = drawer.querySelector('#partyplus-wrap');
-    if (ppWrapMob) {
-        ppWrapMob.style.display = currentMode === 'party' ? 'block' : 'none';
-        const ppBtn = ppWrapMob.querySelector('#partyplusBtnPC');
-        if (ppBtn) ppBtn.classList.toggle('active', partyPlusActive);
-    }
-    drawer.querySelectorAll('[data-diff]').forEach(b => b.classList.toggle('active', b.dataset.diff === currentDifficulty));
-    drawer.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === currentMode));
-    const mobBtn = document.getElementById('mobileSettingsBtn');
-    const themeMap = { casual: 'var(--casual)', standard: 'var(--primary)', extreme: 'var(--extreme)' };
-    if (mobBtn) mobBtn.style.background = themeMap[currentDifficulty] || 'var(--primary)';
-    updateFormulaText();
-}
-
-function clearAll() {
-    upgradesList.forEach((item, index) => {
-        item.currentStack = 0;
-        const el = document.getElementById(`item-${index}`);
-        if (el) el.classList.remove('active');
-        if (item.maxStack > 1) {
-            for (let i = 0; i < item.maxStack; i++) {
-                const dot = document.getElementById(`dot-${index}-${i}`);
-                if (dot) dot.classList.remove('filled');
-            }
+        // Rayfield Notification Alert System Sim 
+        let notifTimeout;
+        function triggerNotif(title, text) {
+            const toast = document.getElementById('notification-toast');
+            document.getElementById('notif-title').innerText = title || "Notification";
+            document.getElementById('notif-body').innerText = text || "";
+            
+            toast.classList.add('show');
+            clearTimeout(notifTimeout);
+            notifTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
         }
-    });
-    calculate();
-}
 
-window.onload = () => {
-    renderGrid();
-    setMode('solo');
-    syncMobileSettings();
-    setTimeout(() => {
-        document.getElementById('loading-screen').style.opacity = '0';
-        document.getElementById('main-ui').classList.add('loaded');
-        setTimeout(() => document.getElementById('loading-screen').remove(), 800);
-    }, 1200);
-};
+        function toggleState(feature, isChecked) {
+            triggerNotif("Feature Hook Fired", `${feature} has been toggled: ${isChecked ? 'ENABLED' : 'DISABLED'}`);
+        }
 
-particlesJS("particles-js", {
-    "particles": { "number": { "value": 45 }, "color": { "value": "#c285ff" }, "opacity": { "value": 0.3 }, "size": { "value": 2.5 }, "move": { "enable": true, "speed": 0.6 } }
-});
-</script>
+        // Virtualized counter storage trackers
+        const counters = {};
+        function modifyUpgrade(name, amt) {
+            if (!counters[name]) counters[name] = 0;
+            counters[name] = Math.max(0, counters[name] + amt);
+            
+            document.getElementById(`tier-${name}`).innerText = "Current: " + counters[name];
+            triggerNotif("Upgrades Property Changed", `Client Signal Fired: ${name} upgraded value is now ${counters[name]}`);
+        }
+
+        // Initialize view generation sequences
+        window.onload = () => {
+            buildDynamicElements();
+            setTimeout(() => { triggerNotif("Nullscape Hack Gui", "Executed Successfully! Enjoy."); }, 500);
+        }
+    </script>
 </body>
 </html>
