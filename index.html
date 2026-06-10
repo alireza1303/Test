@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Lobby Name Maker</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Bangers&family=Creepster&family=Fondamento&family=Fredoka+One&family=Inconsolata&family=Indie+Flower&family=Josefin+Sans&family=Jura&family=Kalam&family=Luckiest+Guy&family=Merriweather&family=Michroma&family=Nunito&family=Oswald&family=Patrick+Hand&family=Permanent+Marker&family=Press+Start+2P&family=Roboto&family=Roboto+Condensed&family=Roboto+Mono&family=Special+Elite&family=Ubuntu&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="lnm.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -116,7 +116,7 @@
     <span class="panel-label">Input text</span>
     <span class="lock-indicator" id="lockIndicator">⊘ Text locked</span>
   </div>
-  <textarea id="inputText" placeholder="Type here, select a portion, set formatting above, then hit Apply..."></textarea>
+  <textarea id="inputText" maxlength="35" placeholder="Type here, select a portion, set formatting above, then hit Apply..."></textarea>
 </div>
 
 <div class="panel">
@@ -133,6 +133,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-<script src="lnm.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
