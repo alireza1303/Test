@@ -107,6 +107,9 @@ document.getElementById('applyBtn').addEventListener('click', () => {
 
 ta.addEventListener('input', () => {
   if (textLocked) return;
+  if (ta.value.length > 35) {
+    ta.value = ta.value.slice(0, 35);
+  }
   richParts = [{ text: ta.value, tags: {} }];
   undoStack = [];
   document.getElementById('undoBtn').disabled = true;
